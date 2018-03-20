@@ -5,10 +5,23 @@
  */
 package pkg325project;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+
 /**
  *
  * @author cjohnson
  */
 public class ConnectionManager {
+    
+    public ServerSocket Server;
+    public ArrayList<Connection> Clients;
+    public HashSet<String> ExistingConnections;
+    
+    public ConnectionManager(int port) throws IOException{
+        Server = new ServerSocket(port);
+    }
     
 }
