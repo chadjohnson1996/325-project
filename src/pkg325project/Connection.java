@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -35,18 +36,36 @@ public class Connection {
     public Lock Lock;
 
     public Connection(ConnectionManager manager, String hostName, int port) {
+
+        Manager = manager;
+        HostName = hostName;
+        Port = port;
+
+        Lock = new ReentrantLock();
+
+    }
+
+    public void Open() {
         try {
-            Manager = manager;
-            HostName = hostName;
-            Port = port;
-            Socket = new Socket(hostName, port);
+            Socket = new Socket(HostName, Port);
             In = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
             Out = new PrintWriter(Socket.getOutputStream(), true);
-            Lock = new ReentrantLock();
+            Write("Open;" + Manager.Port);
+        } catch (Exception e) {
+            System.out.println("Socket failed to open\n" + e.getMessage());
+        }
+
+    }
+    
+    public void Close(){
+        
+        Write("close");
+        try{
+            Socket.close();
         }catch(Exception e){
             
         }
-
+        
     }
 
     public void Write(String toWrite) {

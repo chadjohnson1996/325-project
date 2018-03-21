@@ -20,10 +20,12 @@ public class ConnectionManager {
     public ServerSocket Server;
     public ArrayList<Connection> Clients = new ArrayList<Connection>();
     public ArrayList<TextFile> FilesToShare = new ArrayList<TextFile>();
+    public int Port;
     
     public ConnectionManager(int port){
         try{
            Server = new ServerSocket(port); 
+           Port = port;
         }catch(Exception e){
             
         }

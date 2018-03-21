@@ -1,0 +1,5 @@
+158-0.txt;Emma by Jane Austen (269)
+16-0.txt;Peter Pan by J. M.  Barrie (182)
+1952-0.txt;The Yellow Wallpaper by Charlotte Perkins Gilman (284)
+219-0.txt;Heart of Darkness by Joseph Conrad (539)
+244-0.txt;A Study in Scarlet by Arthur Conan Doyle (153)

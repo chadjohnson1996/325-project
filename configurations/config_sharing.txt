@@ -1,0 +1,3 @@
+1342-0.txt;Pride and Prejudice by Jane Austen (915)
+135-0.txt;Les Misérables by Victor Hugo (187)
+1400-0.txt;Great Expectations by Charles Dickens (253)
