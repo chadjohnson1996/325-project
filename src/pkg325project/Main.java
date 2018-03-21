@@ -6,6 +6,8 @@
 package pkg325project;
 
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  *
@@ -13,6 +15,7 @@ import java.util.Scanner;
  */
 public class Main {
 
+    public static ExecutorService Pool = Executors.newCachedThreadPool();
     /**
      * @param args the command line arguments
      */
