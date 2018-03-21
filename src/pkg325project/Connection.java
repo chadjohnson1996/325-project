@@ -35,12 +35,27 @@ public class Connection {
 
     public Lock Lock;
 
+    public Boolean HeartbeatStatus;
+
+    public Connection(ConnectionManager manager, Socket socket) {
+        try {
+            Manager = manager;
+            HostName = socket.getInetAddress().getCanonicalHostName();
+            Port = socket.getPort();
+            In = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
+            Out = new PrintWriter(Socket.getOutputStream(), true);
+            Lock = new ReentrantLock();
+        }catch(Exception e){
+            System.out.println("Error making connection: " + e.getMessage());
+        }
+
+    }
+
     public Connection(ConnectionManager manager, String hostName, int port) {
 
         Manager = manager;
         HostName = hostName;
         Port = port;
-
         Lock = new ReentrantLock();
 
     }
@@ -50,22 +65,21 @@ public class Connection {
             Socket = new Socket(HostName, Port);
             In = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
             Out = new PrintWriter(Socket.getOutputStream(), true);
-            Write("Open;" + Manager.Port);
         } catch (Exception e) {
             System.out.println("Socket failed to open\n" + e.getMessage());
         }
 
     }
-    
-    public void Close(){
-        
+
+    public void Close() {
+
         Write("close");
-        try{
+        try {
             Socket.close();
-        }catch(Exception e){
-            
+        } catch (Exception e) {
+
         }
-        
+
     }
 
     public void Write(String toWrite) {
