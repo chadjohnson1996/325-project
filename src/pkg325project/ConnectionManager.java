@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  *
@@ -17,11 +18,16 @@ import java.util.ArrayList;
 public class ConnectionManager {
     
     public ServerSocket Server;
-    public ArrayList<Connection> Clients;
-    public HashSet<String> ExistingConnections;
+    public ArrayList<Connection> Clients = new ArrayList<Connection>();
+    public ArrayList<TextFile> FilesToShare = new ArrayList<TextFile>();
     
-    public ConnectionManager(int port) throws IOException{
-        Server = new ServerSocket(port);
+    public ConnectionManager(int port){
+        try{
+           Server = new ServerSocket(port); 
+        }catch(Exception e){
+            
+        }
+        
     }
     
 }
