@@ -42,6 +42,7 @@ public class Main {
     }
 
     public static void logic() {
+        System.out.println("Starting");
         try {
             boolean shouldContinue = true;
             Scanner sc = new Scanner(System.in);
@@ -134,6 +135,7 @@ public class Main {
             String id = UUID.randomUUID().toString();
             String query = Manager.BuildQuery(id, filename);
             for (Connection conn : Manager.Clients) {
+                System.out.println("Sending query " + query + " to host " + conn.HostName);
                 conn.Write(query);
                 String response = conn.Read();
                 if (response.trim().isEmpty()) {
@@ -181,7 +183,14 @@ public class Main {
 
     public static void connectHandler() {
         for (Connection conn : Manager.Clients) {
+            System.out.println("Starting to connect to " + conn.HostName);
             conn.Open();
+            if(conn.Opened){
+                System.out.println("Connection successful");
+            }else{
+                System.out.println("Connection failed");
+            }
+
         }
     }
 

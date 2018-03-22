@@ -36,6 +36,8 @@ public class Connection {
     public Lock Lock;
 
     public Boolean HeartbeatStatus;
+    
+    public Boolean Opened = false;
 
     public Connection(ConnectionManager manager, Socket socket) {
         try {
@@ -65,6 +67,7 @@ public class Connection {
             Socket = new Socket(HostName, Port);
             In = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
             Out = new PrintWriter(Socket.getOutputStream(), true);
+            Opened = true;
         } catch (Exception e) {
             System.out.println("Socket failed to open\n" + e.getMessage());
         }
