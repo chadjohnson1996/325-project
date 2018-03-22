@@ -6,11 +6,14 @@
 package pkg325project;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import static java.lang.Integer.parseInt;
 import java.util.Scanner;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -127,18 +130,62 @@ public class Main {
     }
 
     public static void getHandler(String filename) {
+        try {
+            String id = UUID.randomUUID().toString();
+            String query = Manager.BuildQuery(id, filename);
+            for (Connection conn : Manager.Clients) {
+                conn.Write(query);
+                String response = conn.Read();
+                if (response.trim().isEmpty()) {
+                    continue;
+                }
+
+                Connection fileConn = null;
+                if (response.startsWith(ConnectionManager.HasFile)) {
+                    fileConn = new Connection(conn.Manager, conn.HostName, conn.Port);
+                }
+
+                if (response.startsWith(ConnectionManager.Response)) {
+                    String[] data = response.split(":")[1].split(";");
+                    fileConn = new Connection(Manager, data[1], parseInt(data[2]));
+                    fileConn.Write(Manager.BuildFileTransfer(filename));
+                    try {
+                        File file = new File("./obtained/" + filename);
+                        FileWriter fileWriter = new FileWriter(file);
+                        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                        String line;
+                        while ((line = fileConn.Read()) != null) {
+                            bufferedWriter.write(line + "\n");
+                            bufferedWriter.flush();
+                        }
+                        bufferedWriter.close();
+                        fileWriter.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            System.out.println("File not found");
+        } catch (Exception e) {
+
+        }
 
     }
 
     public static void leaveHandler() {
-
+        for (Connection conn : Manager.Clients) {
+            conn.Close();
+        }
     }
 
     public static void connectHandler() {
-
+        for (Connection conn : Manager.Clients) {
+            conn.Open();
+        }
     }
 
     public static void exitHandler() {
-
+        leaveHandler();
     }
 }
