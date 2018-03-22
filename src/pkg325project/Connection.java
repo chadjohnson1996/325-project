@@ -75,14 +75,12 @@ public class Connection {
     }
 
     public void Close() {
-
-        Write("close");
         try {
             Socket.close();
         } catch (Exception e) {
 
         }
-
+        Opened = false;
     }
 
     public void Write(String toWrite) {

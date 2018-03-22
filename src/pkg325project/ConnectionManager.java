@@ -161,6 +161,7 @@ public class ConnectionManager {
 
     public void TransferHandler(Connection conn, String fileName) {
         try {
+            System.out.println("Received request to transfer " + fileName);
             File file = new File("./shared/" + fileName);
             FileReader fileReader = new FileReader(file);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -169,6 +170,7 @@ public class ConnectionManager {
                 conn.Write(line);
             }
             fileReader.close();
+            System.out.println("Finished transfering file " + fileName);
         } catch (IOException e) {
             e.printStackTrace();
         }

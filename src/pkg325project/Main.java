@@ -156,12 +156,14 @@ public class Main {
                         FileWriter fileWriter = new FileWriter(file);
                         BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
                         String line;
+                        System.out.println("Beginning to receive file " + filename);
                         while ((line = fileConn.Read()) != null) {
                             bufferedWriter.write(line + "\n");
                             bufferedWriter.flush();
                         }
                         bufferedWriter.close();
                         fileWriter.close();
+                        System.out.println("Finished Receiving file " + filename);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
