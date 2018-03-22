@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  *
@@ -22,6 +23,7 @@ public class ConnectionManager {
     
     public ConnectionManager(int port) throws IOException{
         Server = new ServerSocket(port);
+        
     }
     
 }
