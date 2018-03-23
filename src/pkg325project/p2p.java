@@ -96,6 +96,7 @@ public class p2p {
     }
 
     public static void init(Scanner sc) {
+        System.out.println("Note differences in transfered file size are due to text encoding not due to failure to clear buffers");
         Manager = new ConnectionManager(MainPort);
 
         loadPeers();
@@ -402,6 +403,8 @@ class ConnectionManager {
                 conn.Write(line);
             }
             fileReader.close();
+            conn.In.close();
+            conn.Close();
             System.out.println("Finished transfering file " + fileName);
         } catch (IOException e) {
             e.printStackTrace();
