@@ -22,8 +22,8 @@ import static pkg325project.Main.Manager;
  */
 public class ConnectionManager {
 
-    public static final int MaxTimeout = 30000;
-    public static final int TimeoutTryInterval = 3000;
+    public static final int MaxTimeout = 120000;
+    public static final int TimeoutTryInterval = 30000;
     public static final String Heartbeat = "H";
     public static final String Query = "Q";
     public static final String Response = "R";
@@ -39,7 +39,7 @@ public class ConnectionManager {
 
     public ConnectionManager(int port) {
         try {
-            Server = new ServerSocket(port);
+
             Port = port;
             RunTimeoutPoll();
             RunTimeoutCheck();
@@ -50,22 +50,36 @@ public class ConnectionManager {
     }
 
     public void Listen() {
-        try {
-            while (true) {
-                Socket server = Server.accept();
-                Connection conn = new Connection(this, server);
-                System.out.println("Accepted connection from " + conn.HostName);
-                Servers.add(conn);
+                    
+        new Thread(() -> {
+            try {
+                Server = new ServerSocket(Port);
+                while (true) {
+                    Socket server = Server.accept();
+                    Connection conn = new Connection(this, server);
+                    System.out.println("Accepted connection from " + conn.HostName);
+                    Servers.add(conn);
+                    ServerHandler(conn);
+                }
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                return;
+            }finally{
+                try{
+                    Server.close();
+                }catch(Exception e){
+                    
+                }
+                
             }
-        } catch (Exception e) {
-            return;
-        }
+
+        }).start();
 
     }
 
     public void ServerHandler(Connection conn) {
         final Connection localConn = conn;
-        Main.Pool.execute(() -> {
+        new Thread(() -> {
             while (true) {
                 try {
                     String data = localConn.Read();
@@ -88,7 +102,7 @@ public class ConnectionManager {
                 }
             }
         }
-        );
+        ).start();
     }
 
     public void HeartbeatHandler(Connection conn) {
@@ -177,7 +191,7 @@ public class ConnectionManager {
     }
 
     public void RunTimeoutPoll() {
-        Main.Pool.execute(() -> {
+        new Thread(() -> {
             try {
                 while (true) {
                     Thread.sleep(TimeoutTryInterval);
@@ -192,11 +206,11 @@ public class ConnectionManager {
                 RunTimeoutPoll();
             }
 
-        });
+        }).start();
     }
 
     public void RunTimeoutCheck() {
-        Main.Pool.execute(() -> {
+        new Thread(() -> {
             try {
                 while (true) {
                     Thread.sleep(MaxTimeout);
@@ -209,8 +223,8 @@ public class ConnectionManager {
                     }
 
                     for (Connection conn : Servers) {
-                        if (!conn.HeartbeatStatus) {
-                            Clients.remove(conn);
+                        if (conn.Opened && !conn.HeartbeatStatus) {
+                            System.out.println("Timeout elapsed, closing connection " + conn.HostName);
                             conn.Close();
                         }
                         conn.HeartbeatStatus = false;
@@ -220,6 +234,6 @@ public class ConnectionManager {
                 RunTimeoutCheck();
             }
 
-        });
+        }).start();
     }
 }

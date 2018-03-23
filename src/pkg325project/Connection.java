@@ -44,8 +44,9 @@ public class Connection {
             Manager = manager;
             HostName = socket.getInetAddress().getCanonicalHostName();
             Port = socket.getPort();
-            In = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
-            Out = new PrintWriter(Socket.getOutputStream(), true);
+            In = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            Out = new PrintWriter(socket.getOutputStream(), true);
+            Socket = socket;
             Lock = new ReentrantLock();
         }catch(Exception e){
             System.out.println("Error making connection: " + e.getMessage());

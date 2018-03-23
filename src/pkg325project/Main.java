@@ -12,6 +12,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import static java.lang.Integer.parseInt;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -27,8 +30,6 @@ public class Main {
 
     public static ConnectionManager Manager;
 
-    public static int Timeout;
-
     /**
      * @param args the command line arguments
      */
@@ -37,23 +38,24 @@ public class Main {
         // TODO code application logic here
         System.out.println(new File(".").getAbsolutePath());
 
-        logic();
+        Scanner sc = new Scanner(System.in);
+        init(sc);
+        logic(sc);
 
     }
 
-    public static void logic() {
+    public static void logic(Scanner sc) {
         System.out.println("Starting");
         try {
             boolean shouldContinue = true;
-            Scanner sc = new Scanner(System.in);
-            init(sc);
+
             while (shouldContinue) {
                 System.out.print("fileCheck>");
                 String input = sc.nextLine();
                 shouldContinue = handle(input);
             }
         } catch (Exception e) {
-            logic();
+            logic(sc);
         }
     }
 
@@ -88,10 +90,9 @@ public class Main {
         int port = parseInt(sc.nextLine());
         Manager = new ConnectionManager(port);
 
-        System.out.print("Input timeout in milliseconds>");
-        Timeout = parseInt(sc.nextLine());
         loadPeers();
         getFilesToShare();
+        Manager.Listen();
     }
 
     public static void loadPeers() {
@@ -150,24 +151,30 @@ public class Main {
                 if (response.startsWith(ConnectionManager.Response)) {
                     String[] data = response.split(":")[1].split(";");
                     fileConn = new Connection(Manager, data[1], parseInt(data[2]));
-                    fileConn.Write(Manager.BuildFileTransfer(filename));
-                    try {
-                        File file = new File("./obtained/" + filename);
-                        FileWriter fileWriter = new FileWriter(file);
-                        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-                        String line;
-                        System.out.println("Beginning to receive file " + filename);
-                        while ((line = fileConn.Read()) != null) {
-                            bufferedWriter.write(line + "\n");
-                            bufferedWriter.flush();
-                        }
-                        bufferedWriter.close();
-                        fileWriter.close();
-                        System.out.println("Finished Receiving file " + filename);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+
                 }
+
+                fileConn.Open();
+                fileConn.Write(Manager.BuildFileTransfer(filename));
+                try {
+                    File file = new File("./obtained/" + filename);
+                    FileWriter fileWriter = new FileWriter(file);
+                    BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get("./obtained/" + filename), 
+                                                StandardCharsets.UTF_8);
+                    String line;
+                    System.out.println("Beginning to receive file " + filename);
+                    while ((line = fileConn.Read()) != null) {
+                        bufferedWriter.write(line + "\n");
+                        bufferedWriter.flush();
+                    }
+                    bufferedWriter.close();
+                    fileWriter.close();
+                    System.out.println("Finished Receiving file " + filename);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                return;
             }
 
             System.out.println("File not found");
@@ -185,11 +192,11 @@ public class Main {
 
     public static void connectHandler() {
         for (Connection conn : Manager.Clients) {
-            System.out.println("Starting to connect to " + conn.HostName);
+            System.out.println("Starting to connect to " + conn.HostName + ": " + conn.Port);
             conn.Open();
-            if(conn.Opened){
+            if (conn.Opened) {
                 System.out.println("Connection successful");
-            }else{
+            } else {
                 System.out.println("Connection failed");
             }
 
