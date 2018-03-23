@@ -26,9 +26,10 @@ import java.util.concurrent.Executors;
  */
 public class Main {
 
-    public static ExecutorService Pool = Executors.newCachedThreadPool();
 
     public static ConnectionManager Manager;
+    
+    public static int MainPort = 50290;
 
     /**
      * @param args the command line arguments
@@ -86,9 +87,7 @@ public class Main {
     }
 
     public static void init(Scanner sc) {
-        System.out.print("Input port to listen on>");
-        int port = parseInt(sc.nextLine());
-        Manager = new ConnectionManager(port);
+        Manager = new ConnectionManager(MainPort);
 
         loadPeers();
         getFilesToShare();

@@ -22,8 +22,8 @@ import static pkg325project.Main.Manager;
  */
 public class ConnectionManager {
 
-    public static final int MaxTimeout = 120000;
-    public static final int TimeoutTryInterval = 30000;
+    public static final int MaxTimeout = 12000;
+    public static final int TimeoutTryInterval = 3000;
     public static final String Heartbeat = "H";
     public static final String Query = "Q";
     public static final String Response = "R";
@@ -214,15 +214,9 @@ public class ConnectionManager {
             try {
                 while (true) {
                     Thread.sleep(MaxTimeout);
-                    for (Connection conn : Clients) {
-                        if (conn.Opened && !conn.HeartbeatStatus) {
-                            System.out.println("Timeout elapsed, closing connection " + conn.HostName);
-                            conn.Close();
-                        }
-                        conn.HeartbeatStatus = false;
-                    }
 
-                    for (Connection conn : Servers) {
+                    for (int i = 0; i < Servers.size(); i++) {
+                        Connection conn = Servers.get(i);
                         if (conn.Opened && !conn.HeartbeatStatus) {
                             System.out.println("Timeout elapsed, closing connection " + conn.HostName);
                             conn.Close();
@@ -231,6 +225,7 @@ public class ConnectionManager {
                     }
                 }
             } catch (Exception e) {
+                System.out.println("Error occured with timeout check");
                 RunTimeoutCheck();
             }
 
